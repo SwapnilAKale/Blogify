@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%- include("./partials/head") %>
+    <title>Sign Up Page</title>
+    
+    <style>
+        body {
+            color: #f5f5f5;
+            background-color: #1e1e1e;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #container {
+            background-color: #2c2c2c;
+            width: 90%;
+            max-width: 400px;
+            margin: 135px auto;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #F2F0EF;
+            border-radius: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #signup {
+            background-color: #4a4a4a;
+            margin: 10px 0;
+            padding: 20px;
+            border: 1px solid #F2F0EF;
+            border-radius: 10px;
+            color: #f5f5f5;
+        }
+
+        #login {
+            padding: 10px;
+        }
+
+        label {
+            display: block;
+            color: #f5f5f5;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            margin-bottom: 10px;
+            background-color: #333;
+            color: #f5f5f5;
+            transform: scale(1);
+            transition: transform 0.1s;
+        }
+
+        input:focus {
+            transform: scale(1.02);
+            outline: none;
+            border: 1px solid white; 
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #signupbutton {
+            background-color: #6c757d;
+        }
+
+        #signupbutton:hover {
+            background-color: #5a6268;
+        }
+
+        .error-message {
+            color: #ff4d4d;
+            font-size: 14px;
+            display: none;
+            margin-top: -4px;
+            margin-bottom: 10px;
+        }
+        #signup p {
+            margin-bottom: -5px;
+        }
+    </style>
+</head>
+
+<body>
+    <%- include("./partials/loginnav") %>
+    <div id="container">
+        <div id="signup">
+            <form method="POST" action="/signup" onsubmit="return validateForm()">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="UserName" autocomplete="off" oninput="hideUsernameError()">
+                <span id="username-error" class="error-message">Username cannot be empty</span>
+                
+                <label for="password">Password</label>
+                <input type="password" id="password" name="PassWord" autocomplete="off" onkeypress="preventSpace(event)" oninput="validatePassword()">
+                <span id="password-error" class="error-message">No spaces allowed in the password</span>
+                <span id="length-error" class="error-message">Password must be 8-15 characters long</span>
+                
+                <p><button type="submit">Create your account</button></p>
+            </form>
+        </div>
+        <div id="login">
+            <form method="GET" action="/">
+                <button type="submit" id="signupbutton">Already have an account? Log in</button>
+            </form>
+        </div>
+    </div>
+    <%- include("./partials/script") %>
+    <script>
+        function trimUsername() {
+            const usernameField = document.getElementById("username");
+            usernameField.value = usernameField.value.trim().toLowerCase();
+        }
+
+        function preventSpace(event) {
+            if (event.key === " ") {
+                event.preventDefault();
+                showPasswordError();
+            }
+        }
+
+        function showPasswordError() {
+            document.getElementById("password-error").style.display = "block";
+        }
+
+        function hidePasswordError() {
+            document.getElementById("password-error").style.display = "none";
+        }
+
+        function showLengthError() {
+            document.getElementById("length-error").style.display = "block";
+        }
+
+        function hideLengthError() {
+            document.getElementById("length-error").style.display = "none";
+        }
+
+        function showUsernameError() {
+            document.getElementById("username-error").style.display = "block";
+        }
+
+        function hideUsernameError() {
+            document.getElementById("username-error").style.display = "none";
+        }
+
+        function validatePassword() {
+            const passwordField = document.getElementById("password");
+            const password = passwordField.value;
+
+            if (password.includes(" ")) {
+                showPasswordError();
+            } else {
+                hidePasswordError();
+            }
+
+            if (password.length < 8 || password.length > 15) {
+                showLengthError();
+            } else {
+                hideLengthError();
+            }
+        }
+
+        function validateForm() {
+            const usernameField = document.getElementById("username");
+            const passwordField = document.getElementById("password");
+            const username = usernameField.value.trim();
+            const password = passwordField.value;
+
+            trimUsername();
+
+            let valid = true;
+
+            if (username === "") {
+                showUsernameError();
+                valid = false;
+            }
+
+            if (password.includes(" ") || password.length < 8 || password.length > 15) {
+                validatePassword();
+                valid = false;
+            }
+
+            return valid;
+        }
+    </script>
+</body>
+</html>

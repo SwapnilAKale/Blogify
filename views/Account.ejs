@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Page</title>
+    <style>
+        body {
+            color: #f5f5f5;
+            background-color: #1e1e1e;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        #header {
+            color: #f5f5f5;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            height: 60px;
+        }
+
+        nav a {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #0056b3;
+        }
+
+        #header p {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        #container {
+            background-color: #333;
+            width: 50%;
+            padding: 30px;
+            margin: 20px auto;
+            border-radius: 24px;
+            color: #f5f5f5;
+        }
+
+        ul {
+            background-color: #444;
+            padding: 0;
+            border-radius: 15px;
+            list-style-type: none;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 20px;
+            padding: 10px 15px;
+        }
+
+        ul p {
+            text-align: center;
+        }
+
+        ul img {
+            display: block;
+            max-width: 30vw;
+            max-height: 300px;
+            margin: 0 auto;
+        }
+
+        #sub {
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .like-button {
+            background-color: #28a745; 
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        .like-button:hover {
+            background-color: #218838; 
+        }
+    </style>
+</head>
+
+<body>
+    
+    <% USER.forEach((user, index) => { %>
+        <div id="header">
+            <p>Blogify</p>
+            <nav>
+                <a href="/Account?username=<%= user.username %>">Account</a>
+                <a href="/Posts?username=<%= user.username %>">Posts</a>
+                <a href="/Profile?username=<%= user.username %>">Profile</a>
+            </nav>
+        </div>
+        <div id="container">
+            <% if (Post) { %>
+                <% alluser.forEach((allusers, index) => { %>
+                        <% const LIKE = likess.find(like => like.postId.toString() === allusers._id.toString()); %>
+                        <div>
+                            <% if (allusers.coverImageURL != "") { %>
+                             <ul data-post-id="<%= allusers._id %>">
+                                <li>
+                                    <h2><%= allusers.username %></h2>
+                                    <img src="<%= allusers.coverImageURL %>" alt="Cover Image">
+                                    <p><%= allusers.aboutme %></p>
+                                    <button class="like-button">Like</button>
+                                    <div class="counts">Likes: <%= LIKE ? LIKE.likes : 0 %></div>
+                                    <p id="sub">Updated on - <%= allusers.createdTime %></p>
+                                </li>
+                            </ul>
+                            <% } %>
+                        </div>
+                <% }) %>
+            <% } else { %>
+                <ul>
+                    <li style="text-align: center;">Nothing New</li>
+                </ul>
+            <% } %>
+        </div>
+    
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+    
+        document.querySelectorAll('.like-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const postId = button.closest('ul').getAttribute('data-post-id');
+                const userId = '<%= user._id %>';
+    
+                socket.emit('like', { postId, userId });
+            });
+        });
+    
+        socket.on('likeCounts', (counts) => {
+            const postElement = document.querySelector(`ul[data-post-id="${counts.postId}"]`);
+            if (postElement) {
+                postElement.querySelector('.counts').textContent = `Likes: ${counts.likes}`;
+            }
+        });
+    </script>
+    <% }) %>
+</body>
+
+</html>

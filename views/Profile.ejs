@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <style>
+        body {
+            color: #f5f5f5;
+            background-color: #1e1e1e;
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+
+        #header {
+            color: #f5f5f5;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            height: 60px;
+        }
+
+        nav a {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #0056b3;
+        }
+
+        #header p {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        #profile-details {
+            padding: 20px 30px;
+            margin: 110px auto;
+            width: 50%;
+            background-color: #333;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #profile-details h2 {
+            font-size: 28px;
+            color: #00aced;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        #profile-details p {
+            font-size: 16px;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        #cover-image {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        #none {
+            font-family: 'Courier New', Courier, monospace;
+            color: #888;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background-color: #b02a37;
+        }
+
+        .button-group button.logout {
+            background-color: #007bff;
+        }
+
+        .button-group button.logout:hover {
+            background-color: #0056b3;
+        }
+
+        #confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #modal-content {
+            background-color: #1d1d1d;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 400px;
+            text-align: center;
+            color: #f5f5f5;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        #modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #ff4d4f;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-buttons .confirm {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .modal-buttons .confirm:hover {
+            background-color: #b02a37;
+        }
+
+        .modal-buttons .cancel {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .modal-buttons .cancel:hover {
+            background-color: #5a6268;
+        }
+    </style>
+    <script>
+        function openConfirmationModal() {
+            document.getElementById('confirmation-modal').style.display = 'flex';
+        }
+    
+        function closeConfirmationModal() {
+            document.getElementById('confirmation-modal').style.display = 'none';
+        }
+    
+        function confirmDeletion(event) {
+            event.preventDefault();
+            openConfirmationModal();
+        }
+    
+        function handleDelete() {
+            document.getElementById('delete-form').submit();
+        }
+    </script>
+</head>
+<body>
+    <% USER.forEach((user, index) => { %>
+        <div id="header">
+            <p>Blogify</p>
+            <nav>
+                <a href="/Account?username=<%= user.username %>">Account</a>
+                <a href="/Posts?username=<%= user.username %>">Posts</a>
+                <a href="/Profile?username=<%= user.username %>">Profile</a>
+            </nav>
+        </div>
+        
+        <div id="profile-details">
+            <h2>Profile Information</h2>
+            <p><strong>Username:</strong> <%= user.username %></p>
+            <p><strong>ID:</strong> <%= user.id %></p>
+            <p><strong>Password:</strong> <%= user.password %></p>
+            <p><strong>Account Created:</strong> <%= user.createdTime %></p>
+            <p><strong>Last Updated:</strong> <%= new Date(user.updatedAt).toLocaleString() %></p>
+
+            <h3>Your Post:</h3>
+            <% if (!user.aboutme) { %>
+                <p id="none">No Posts</p>
+            <% } else { %>
+                <img id="cover-image" src="<%= user.coverImageURL %>" alt="Cover Image">
+                <% if (!user.aboutme) { %>
+                    <p id="none">No description available</p>
+                <% } else { %>
+                    <p><%= user.aboutme %></p>
+                <% } %>
+            <% } %>
+            
+            <div class="button-group">
+                <form id="delete-form" method="POST" action="/Delete?username=<%= user.username %>" onsubmit="confirmDeletion(event)">
+                    <button type="button" onclick="confirmDeletion(event)">Delete Account</button>
+                </form>
+                
+                <form method="GET" action="/Logout">
+                    <button type="submit" class="logout">Log Out</button>
+                </form>
+            </div>
+        </div>
+    <% }) %>
+
+    <div id="confirmation-modal" onclick="closeConfirmationModal()">
+        <div id="modal-content" onclick="event.stopPropagation()">
+            <h3>Confirm Account Deletion</h3>
+            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="confirm" onclick="handleDelete()">Yes, Delete</button>
+                <button class="cancel" onclick="closeConfirmationModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+            
